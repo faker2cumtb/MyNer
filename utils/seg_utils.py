@@ -2,13 +2,14 @@ import jieba.posseg as pseg
 import jieba
 
 
-def segment(sentences):
+def segment(sentences,seg_dict_path = None):
     """
     分词
     :param sentences:
     :return:
     """
-    jieba.load_userdict("all_ents.txt")
+    if seg_dict_path is not None:
+        jieba.load_userdict(seg_dict_path)
     pseg_sentences = []
     for sentence in sentences:
         pseg_sentence = [words.word + "/" + words.flag for words in pseg.cut(sentence)]

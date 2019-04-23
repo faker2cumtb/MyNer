@@ -174,9 +174,12 @@ def filter_word_freq(dict, threshold):
 
 def main():
     data_path = "/home/luoxinyu/PycharmProjects/MyNer/data/example_BIOES.test"
-    file_path = "/home/luoxinyu/PycharmProjects/MyNer/data/example_BIOES_features.test"
+    file_path = "/home/luoxinyu/PycharmProjects/MyNer/data/BIOES/segwithoutdict_pos_bound_features.test"
 
     ent_pointer_path = "/home/luoxinyu/PycharmProjects/MyNer/ent_pointer.json"
+
+    # seg_dict_path = "all_ents.txt"
+    seg_dict_path = None
 
     THRESHOLD = 20
     REGEN_ENT_WORD = False
@@ -190,7 +193,7 @@ def main():
         save_all_entities(char_lists, tag_lists, ent_type_list)
 
     sentences = ["".join(char_list) for char_list in char_lists]
-    pseg_sentences = segment(sentences)
+    pseg_sentences = segment(sentences,seg_dict_path)
 
     if REGEN_POIT_WORD:
         dict = get_ent_pointer_words(pseg_sentences, ent_type_list)
@@ -198,18 +201,20 @@ def main():
     else:
         dict = read_json(ent_pointer_path)
 
-    LOC_pointer_words = filter_word_freq(dict["LOC"], THRESHOLD)
-    PER_pointer_words = filter_word_freq(dict["PER"], THRESHOLD)
-    ORG_pointer_words = filter_word_freq(dict["ORG"], THRESHOLD)
+    # LOC_pointer_words = filter_word_freq(dict["LOC"], THRESHOLD)
+    # PER_pointer_words = filter_word_freq(dict["PER"], THRESHOLD)
+    # ORG_pointer_words = filter_word_freq(dict["ORG"], THRESHOLD)
 
-    loc_feat = set_ent_pot_features(pseg_sentences, LOC_pointer_words)
-    per_feat = set_ent_pot_features(pseg_sentences, PER_pointer_words)
-    org_feat = set_ent_pot_features(pseg_sentences, ORG_pointer_words)
+    # loc_feat = set_ent_pot_features(pseg_sentences, LOC_pointer_words)
+    # per_feat = set_ent_pot_features(pseg_sentences, PER_pointer_words)
+    # org_feat = set_ent_pot_features(pseg_sentences, ORG_pointer_words)
     pos_feat = set_poster_features(pseg_sentences)
     bound_feat = set_boundary_features(pseg_sentences)
     print("finished")
 
-    features = [char_lists, pos_feat, bound_feat, loc_feat, per_feat, org_feat, tag_lists]
+    # features = [char_lists, pos_feat, bound_feat, loc_feat, per_feat, org_feat, tag_lists]
+    features = [char_lists, pos_feat, bound_feat, tag_lists]
+
     with open(file_path, "w", encoding="utf8") as f:
         for i in range(len(char_lists)):
             for j in range(len(char_lists[i])):

@@ -1,22 +1,51 @@
-import jieba
-import jieba.posseg as pseg
-import numpy as np
+#!/usr/bin/env python3 # -*- coding: utf-8 -*-
 
-def segment(sentences):
-    jieba.load_userdict("all_ents.txt")
-    pseg_sentences = []
-    for sentence in sentences:
-        pseg_sentence = [words.word + "/" + words.flag for words in pseg.cut(sentence)]
-        pseg_sentences.append(pseg_sentence)
-    return pseg_sentences
+## 模型测试
+import os
 
-print (np.array([["你","是","什","么","呢"],
-          ["我","怎","么","知","道","呢"]]))
+
+def test_model(crf_test_path, model_file_path, test_file_path, result_file_path):
+    report = os.popen(" ".join([crf_test_path, "-m", model_file_path, test_file_path, '>', result_file_path]))
+    return report
+
+
+def f1(path):
+    with open(path) as f:
+        all_tag = 0  # 记录所有的标记数
+        loc_tag = 0  # 记录真实的地理位置标记数
+        pred_loc_tag = 0  # 记录预测的地理位置标记数
+        correct_tag = 0  # 记录正确的标记数
+        correct_loc_tag = 0  # 记录正确的地理位置标记数
+        # 地理命名实体标记
+        states = ['O']
+        for line in f:  # i=i+1
+            line = line.strip()
+            if line == '':
+                continue
+            r = line.split()[-2].strip()  # print(_, r, p)
+            p = line.split()[-1].strip()
+            all_tag += 1
+            if r == p:
+                correct_tag += 1
+                if r not in states:
+                    correct_loc_tag += 1
+            if r not in states:
+                loc_tag += 1
+            if p not in states:
+                pred_loc_tag += 1
+        print(correct_loc_tag)
+        print(pred_loc_tag)
+        loc_P = 1.0 * correct_loc_tag / pred_loc_tag
+        loc_R = 1.0 * correct_loc_tag / loc_tag
+        print('loc_P:{0}, loc_R:{1}, loc_F1:{2}'.format(loc_P, loc_R, (2 * loc_P * loc_R) / (loc_P + loc_R)))
+
 
 if __name__ == '__main__':
-    sentences = ["你是什么呢","你说我是什么弟弟","日本索尼公司","铁道部第二工程局","我是姚明"]
-    print (segment(sentences))
+    crf_test_path = "/home/luoxinyu/CRF++-0.58/crf_test"
+    model_file_path = "/home/luoxinyu/CRF++-0.58/my_data/model_3/model"
+    test_file_path = "/home/luoxinyu/CRF++-0.58/my_data/model_3/segwithoutdict_pos_bound_features.test"
+    result_file_path = "/home/luoxinyu/CRF++-0.58/my_data/model_3/result.rst"
 
-    with open("LOC" + ".txt", "r", encoding="utf8") as f:
-        ents = f.readlines()
-    print (ents)
+    # test_model(crf_test_path, model_file_path, test_file_path, result_file_path)
+
+    f1(result_file_path)

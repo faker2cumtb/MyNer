@@ -23,6 +23,8 @@ def f1(path):
                 loc_tag += 1
             if p not in states:
                 pred_loc_tag += 1
+        print(correct_loc_tag)
+        print(pred_loc_tag)
         loc_P = 1.0 * correct_loc_tag / pred_loc_tag
         loc_R = 1.0 * correct_loc_tag / loc_tag
         print('loc_P:{0}, loc_R:{1}, loc_F1:{2}'.format(loc_P, loc_R, (2 * loc_P * loc_R) / (loc_P + loc_R)))
@@ -66,7 +68,8 @@ def locationNER(text):
 
 
 if __name__ == '__main__':
-    f1('/home/luoxinyu/PycharmProjects/MyNer/data/result.rst')
+    f1('/home/luoxinyu/CRF++-0.58/my_data/model_3/result.rst')
+    # f1('/home/luoxinyu/PycharmProjects/MyNer/data/result.rst')
     # # 测试
     # text = '我中午要去北京饭店，下午去中山公园，晚上回亚运村。'
     # print(text, locationNER(text), sep='==> ')
